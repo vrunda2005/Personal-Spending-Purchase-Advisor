@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: advisify-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: advisor
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d advisor"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - advisify-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: advisify-backend
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgrespassword@db:5432/advisor
+      # Placeholder: User should replace this with their actual Gemini API Key
+      - GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - advisify-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: advisify-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - advisify-network
+
+volumes:
+  postgres_data:
+
+networks:
+  advisify-network:
+    driver: bridge
