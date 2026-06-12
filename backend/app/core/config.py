@@ -1,4 +1,5 @@
 from typing import Optional
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -7,6 +8,13 @@ class Settings(BaseSettings):
     
     # Database configuration (Defaults to Docker Compose PG service)
     DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/advisor"
+    
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def assemble_db_url(cls, v: str) -> str:
+        if isinstance(v, str) and v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql://", 1)
+        return v
     
     # JWT Authentication settings
     SECRET_KEY: str = "3d9b8e8f81f1816e87a2d48d6174a7b7a7dcd2b3b4f6277c0879e6f3b063a5ba"

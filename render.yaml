@@ -3,8 +3,9 @@ services:
   - type: web
     name: advisify-backend
     runtime: python
-    buildCommand: "pip install -r backend/requirements.txt && pip install bcrypt"
-    startCommand: "cd backend && alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt && pip install bcrypt"
+    startCommand: "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -21,8 +22,9 @@ services:
   - type: web
     name: advisify-frontend
     runtime: static
-    buildCommand: "cd frontend && npm install && npm run build"
-    publishPath: "frontend/dist"
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: "dist"
     headers:
       - path: /*
         name: Cache-Control
@@ -33,9 +35,7 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        fromService:
-          name: advisify-backend
-          property: host
+        sync: false # User must specify this manually after deploying backend
 
 databases:
   - name: advisify-db

@@ -1,0 +1,29 @@
+# Environment variables (sensitive data)
+.env
+backend/.env
+frontend/.env
+
+# Python caching and environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+ENV/
+.pytest_cache/
+
+# Databases (Local dev)
+*.db
+backend/dev.db
+backend/test.db
+
+# Node dependencies and builds
+node_modules/
+dist/
+build/
+.eslintcache
+
+# OS files
+.DS_Store
+Thumbs.db
