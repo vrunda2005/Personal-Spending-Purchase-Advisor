@@ -35,7 +35,7 @@ app.include_router(goals.router, prefix=settings.API_V1_STR)
 app.include_router(purchases.router, prefix=settings.API_V1_STR)
 app.include_router(advisor.router, prefix=settings.API_V1_STR)
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def root():
     return {
         "status": "healthy",
