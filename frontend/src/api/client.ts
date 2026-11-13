@@ -1,7 +1,14 @@
 import axios from 'axios';
 
 // Configure backend endpoint URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+let envApiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api').trim();
+// Strip trailing slashes
+envApiUrl = envApiUrl.replace(/\/+$/, '');
+// Ensure the endpoint includes /api if not specified
+if (!envApiUrl.endsWith('/api')) {
+  envApiUrl += '/api';
+}
+const API_BASE_URL = envApiUrl;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
